@@ -3,56 +3,41 @@ require 'fileutils'
 class Lexico
 
 	# class variables
-	@@fileContent = Array.new()	# content of the file
-	@@reservWords = Array.new()	# reserverd words
+	@@ReservWords = ['suma',	'resta',	'multiplica',	'divide',	'guardalo',
+										'mas',	'menos',	'por',				'entre',	'en'].freeze
 
-	@@reservWords = ['suma',	'resta',	'multiplica',	'divide',	'guardalo',
-										'mas',	'menos',	'por',				'entre',	'en']
-
-
-	def readFile
+	def readFile(fileName = "code.txt")
 	'''
-		Read the file and store the information on @@fileContent.
+		Read the file and return an array with the content of the file
+		splitted by words.
 	'''
-		counter = 0
+		@fileName = fileName
+		@words = Array.new()
+		file = File.open(@fileName, "r") # "r" stands for read
 
-		filename = "code.txt"
-		file = File.open(filename, "r") # "r" stands for read
-
-		# read each line of the file and store it on @@fileContent
+		# split the content of the file by words
 		file.each_line do |line|
-			@@fileContent[counter] = line.to_s()
-			counter += 1
+			for word in line.split(" ")
+				@words = word
+				puts(@words)
+			end
 		end
-		checkFileText()
-	end # end function
 
+		return @words
 
-	def checkFileText
-	'''
-		Check each word of the file.
-	'''
-		lineWords = Array.new()
-		counter = 0
-
-		for words in @@fileContent
-			lineWords[counter] = words.split
-			counter += 1
-		end
 	end # end function
 
 
 	def classifyWord(word)
 		'''
-			Classify the word.
+			Return the classification of the word.
 		'''
+		@word = word
 
-	end
+	end # end function
 
 	# access controls
-	private :checkFileText
+	public	:classifyWord
+	private	:readFile
 
 end # end class
-
-test = Lexico.new()
-test.readFile()
