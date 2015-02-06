@@ -9,9 +9,11 @@ class Lexico
 	@@reservWords = ['suma',	'resta',	'multiplica',	'divide',	'guardalo',
 										'mas',	'menos',	'por',				'entre',	'en']
 
-	# read file
-	def self.readFile
 
+	def readFile
+	'''
+		Read the file and store the information on @@fileContent.
+	'''
 		counter = 0
 
 		filename = "code.txt"
@@ -19,16 +21,38 @@ class Lexico
 
 		# read each line of the file and store it on @@fileContent
 		file.each_line do |line|
-			@@fileContent[counter] = line
+			@@fileContent[counter] = line.to_s()
 			counter += 1
 		end
-
+		checkFileText()
 	end # end function
+
 
 	def checkFileText
-		
+	'''
+		Check each word of the file.
+	'''
+		lineWords = Array.new()
+		counter = 0
+
+		for words in @@fileContent
+			lineWords[counter] = words.split
+			counter += 1
+		end
 	end # end function
+
+
+	def classifyWord(word)
+		'''
+			Classify the word.
+		'''
+
+	end
+
+	# access controls
+	private :checkFileText
 
 end # end class
 
-Lexico.readFile()
+test = Lexico.new()
+test.readFile()
