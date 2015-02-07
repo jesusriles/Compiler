@@ -1,6 +1,6 @@
 require 'fileutils'
 
-class Lexico
+class Lexical
 
 	# class variables
 	@@ReservWords = ['suma',	'resta',	'multiplica',	'divide',	'guardalo',		'definir',	'dejalo',
@@ -8,10 +8,10 @@ class Lexico
 
 
 	def readFile(fileName = "code.txt")
-	'''
-		Read the file and return an array with the content of the file
-		splitted by words.
-	'''
+		'''
+			Read the file and return an array with the content of the file
+			splitted by words.
+		'''
 		@fileName = fileName
 		@words = Array.new()
 		file = File.open(@fileName, "r") # "r" stands for read
@@ -43,7 +43,6 @@ class Lexico
 								'constant', 			# 3
 								'symbol'].freeze	# 4
 
-		# check if @word start with a letter
 		if(@word[0] =~ /[A-Z]/ || @word[0] =~ /[a-z]/)
 			if(@@ReservWords.include?(@word))
 				return @Classif[0]	# keyword
@@ -53,8 +52,29 @@ class Lexico
 
 	end # end function
 
+
+	def classifyAsHash
+		'''
+			Return a hash where the *key is the word and *value is the classification
+		'''
+		fileContent = Array.new()
+		fileContent = readFile()
+		result = Hash.new()
+
+		for word in fileContent
+			if(!result.has_value?(word))
+				result[word] = classifyWord(word).to_s()
+			end
+		end
+
+		return result
+
+	end # end function
+
+
 	# access controls
-	public	:classifyWord, :readFile
+	private :classifyWord, :readFile
+	public :classifyAsHash
 
 end # end class
 
@@ -62,17 +82,10 @@ end # end class
 '''
 	Start - Testing Area
 '''
-test = Lexico.new()
 
-# readFile()
-fileContent = Array.new()
-
-fileContent = test.readFile()
-
-# classifyWord()
-for word in fileContent
-	puts(word + "\t\tcategory:\t\t" + test.classifyWord(word).to_s)
-end
+a = Lexical.new()
+words = a.classifyAsHash
+puts(words)
 
 '''
 	Ends - Testing Area
