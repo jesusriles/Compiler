@@ -1,0 +1,7 @@
+definir a como 9
+definir b como 10
+definir c como 0
+definir d como 0
+
+suma a mas b, dejalo c
+multiplica 9 por c, dejalo d
