@@ -69,7 +69,8 @@ class Lexical
 				if(letter == '.')
 					dot += 1
 				end
-				if(!(letter =~ /[0-9]/) && (dot == 2))
+
+				if(!(letter =~ /[0-9]/ || letter == ".") || (dot == 2))
 					Kernel.abort("Error syntaxis on: '" + @word + "', line: " + getLine(@word).to_s)
 				end
 			end
@@ -79,8 +80,9 @@ class Lexical
 			return @Classif[3]	# symbol
 		else
 			Kernel.abort("Error syntaxis on: '" + @word + "', line: " + getLine(@word).to_s)
+			exit()
 		end
-
+		
 	end # end function
 
 
@@ -129,6 +131,7 @@ class Lexical
 		return classifyAsHash
 
 	end # end function
+
 
 	# access controls
 	private :classifyWord, :readFile, :getLine, :classifyAsHash
