@@ -5,9 +5,10 @@ class Lexical
 	# class variables
 	@@ReservWords = ['suma',	'resta',	'multiplica',	'divide',	'guardalo',		'definir',	'dejalo',
 										'mas',	'menos',	'por',				'entre',	'en',					'como'].freeze
+	@@fileName = 'code.txt'.freeze
 
 
-	def readFile(fileName = "code.txt")
+	def readFile(fileName = @@fileName)
 		'''
 			Read the file and return an array with the content of the file
 			splitted by words.
@@ -56,7 +57,7 @@ class Lexical
 			else
 					@word.split("").each do |letter|
 						if(!(letter =~ /[a-z]/))
-							Kernel.abort("Error syntaxis on: '" + @word + "'")
+							Kernel.abort("Error syntaxis on: '" + @word + "', line: " + getLine(@word).to_s)
 						end
 					end
 				return @Classif[1]	# identifier
@@ -69,7 +70,7 @@ class Lexical
 					dot += 1
 				end
 				if(!(letter =~ /[0-9]/) && (dot == 2))
-					Kernel.abort("Error syntaxis on: '" + @word + "'")
+					Kernel.abort("Error syntaxis on: '" + @word + "', line: " + getLine(@word).to_s)
 				end
 			end
 			return @Classif[2]	# constant
@@ -77,7 +78,7 @@ class Lexical
 		elsif(@word[0] == ',')
 			return @Classif[3]	# symbol
 		else
-			Kernel.abort("Error syntaxis on: '" + @word + "'")
+			Kernel.abort("Error syntaxis on: '" + @word + "', line: " + getLine(@word).to_s)
 		end
 
 	end # end function
@@ -102,9 +103,36 @@ class Lexical
 	end # end function
 
 
+	def getLine(word = '', fileName = @@fileName)
+		'''
+			Return the number of the line where the word is found.
+		'''
+		@fileName = fileName
+		@word = word
+		file = File.open(@fileName, "r") # "r" stands for read
+
+		counter = 1
+		file.each_line do |line|
+			if(line.include?(@word))
+				return counter
+			end
+			counter += 1
+		end
+
+	end # end function
+
+
+	def startLexicalAnalysis
+		'''
+			Start lexical analysis
+		'''
+		return classifyAsHash
+
+	end # end function
+
 	# access controls
-	private :classifyWord, :readFile
-	public :classifyAsHash
+	private :classifyWord, :readFile, :getLine, :classifyAsHash
+	public :startLexicalAnalysis
 
 end # end class
 
@@ -114,7 +142,7 @@ end # end class
 '''
 
 a = Lexical.new()
-words = a.classifyAsHash
+words = a.startLexicalAnalysis
 puts(words)
 
 '''
