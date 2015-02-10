@@ -69,7 +69,6 @@ class Lexical
 				if(letter == '.')
 					dot += 1
 				end
-
 				if(!(letter =~ /[0-9]/ || letter == ".") || (dot == 2))
 					Kernel.abort("Error syntaxis on: '" + @word + "', line: " + getLine(@word).to_s)
 				end
@@ -80,11 +79,10 @@ class Lexical
 			return @Classif[3]	# symbol
 		else
 			Kernel.abort("Error syntaxis on: '" + @word + "', line: " + getLine(@word).to_s)
-			exit()
 		end
-		
-	end # end function
 
+	end # end function
+	
 
 	def classifyAsHash
 		'''
