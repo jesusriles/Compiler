@@ -32,9 +32,13 @@ class Lexical
 			stringChar = "\""
 			string = String.new()
 			if(line.include?("\""))
-				string << line[/#{Regexp.escape(stringChar)}(.*?)#{Regexp.escape(stringChar)}/m, 1] # returns the characters between double quotes
-				@words << ('"' + string + '"')
-				line.slice!(('"' + string + '"'))
+				begin
+					string << line[/#{Regexp.escape(stringChar)}(.*?)#{Regexp.escape(stringChar)}/m, 1] # returns the characters between double quotes
+					@words << ('"' + string + '"')
+					line.slice!(('"' + string + '"'))
+				rescue
+					errorMessage(line ,2)
+				end
 			end
 
 			for word in line.split(" ")
@@ -159,12 +163,21 @@ class Lexical
 	end # end function
 
 
-	def errorMessage(word)
+	def errorMessage(word, option = 1)
 		'''
 			Prints an error message.
 		'''
 		@word = word
-		Kernel.abort("Lexical error on: '" + @word + "', at line: " + getLine(@word).to_s + "\n")
+		@option = option
+
+		if (option == 1)
+			Kernel.abort("Lexical error on: '" + @word + "', at line: " + getLine(@word).to_s + "\n")
+		end
+
+		if (option == 2)
+			puts("")
+			Kernel.abort('Please close double quotes ("") on line: ' + getLine(@word).to_s)
+		end
 
 	end # end function
 
