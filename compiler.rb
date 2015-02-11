@@ -41,7 +41,7 @@ class Lexical
 				counter += 1
 			end
 		end
-
+		
 		return @words
 
 	end # end function
@@ -50,6 +50,7 @@ class Lexical
 	def classifyWord(word)
 		'''
 			Return the classification of the word.
+
 			Note: Identifiers can only contain lower letters.
 
 			Example on C:
@@ -58,8 +59,11 @@ class Lexical
 		@word = word
 		@Classif = ['keyword', 				# 0
 								'identifier', 		# 1
-								'constant', 			# 2
-								'symbol'].freeze	# 3
+								'constant', 			# 2 not used
+								'symbol',					# 3
+								'long',						# 4
+								'double',					# 5
+								'string'].freeze	# 6
 
 		if(@word[0] =~ /[a-z]/)
 			if(@@ReservWords.include?(@word))
@@ -86,7 +90,11 @@ class Lexical
 					errorMessage(@word)
 				end
 			end
-			return @Classif[2]	# constant
+			if(dot == 1)
+				return @Classif[5]	# constant
+			else
+				return @Classif[4]	# constant
+			end
 			
 		elsif(@word[0] == ',')
 			return @Classif[3]	# symbol
@@ -149,7 +157,7 @@ class Lexical
 			Prints an error message.
 		'''
 		@word = word
-		Kernel.abort("Error syntaxis on: '" + @word + "', line: " + getLine(@word).to_s + "\n")
+		Kernel.abort("Lexical error on: '" + @word + "', at line: " + getLine(@word).to_s + "\n")
 
 	end # end function
 
