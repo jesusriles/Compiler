@@ -1,3 +1,8 @@
+# 																								#
+# 	Nombre: 		Jesus Hector Gonzalez Vidaurri		#
+# 	Materia: 		Lenguajes de Programacion					#
+# 																								#
+
 require 'fileutils'
 
 class Lexical
@@ -12,6 +17,8 @@ class Lexical
 		'''
 			Read the file and return an array with the content of the file
 			splitted by words.
+
+			Lines starting with double hashtag (##) are ignored.
 		'''
 		@fileName = fileName
 		@words = Array.new()
@@ -19,6 +26,9 @@ class Lexical
 
 		counter = 0
 		file.each_line do |line|
+			if(line[0] == "#" && line[1] == "#")
+				next
+			end
 			for word in line.split(" ")
 
 				if(word.include?(','))
@@ -57,7 +67,7 @@ class Lexical
 			else
 					@word.split("").each do |letter|
 						if(!(letter =~ /[a-z]/))
-							Kernel.abort("Error syntaxis on: '" + @word + "', line: " + getLine(@word).to_s)
+							errorMessage(@word)
 						end
 					end
 				return @Classif[1]	# identifier
@@ -65,13 +75,15 @@ class Lexical
 
 		elsif(@word[0] =~ /[0-9]/)
 			dot = 0
+			if(@word[-1] == ".")
+				errorMessage(@word)
+			end
 			@word.split("").each do |letter|
 				if(letter == '.')
 					dot += 1
 				end
-
 				if(!(letter =~ /[0-9]/ || letter == ".") || (dot == 2))
-					Kernel.abort("Error syntaxis on: '" + @word + "', line: " + getLine(@word).to_s)
+					errorMessage(@word)
 				end
 			end
 			return @Classif[2]	# constant
@@ -79,12 +91,11 @@ class Lexical
 		elsif(@word[0] == ',')
 			return @Classif[3]	# symbol
 		else
-			Kernel.abort("Error syntaxis on: '" + @word + "', line: " + getLine(@word).to_s)
-			exit()
+			errorMessage(@word)
 		end
-		
-	end # end function
 
+	end # end function
+	
 
 	def classifyAsHash
 		'''
@@ -133,8 +144,18 @@ class Lexical
 	end # end function
 
 
+	def errorMessage(word)
+		'''
+			Prints an error message.
+		'''
+		@word = word
+		Kernel.abort("Error syntaxis on: '" + @word + "', line: " + getLine(@word).to_s + "\n")
+
+	end # end function
+
+
 	# access controls
-	private :classifyWord, :readFile, :getLine, :classifyAsHash
+	private :classifyWord, :readFile, :getLine, :classifyAsHash, :errorMessage
 	public :startLexicalAnalysis
 
 end # end class
