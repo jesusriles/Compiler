@@ -24,24 +24,27 @@ class Lexical
 		@words = Array.new()
 		file = File.open(@fileName, "r") # "r" stands for read
 
-		counter = 0
 		file.each_line do |line|
 			if(line[0] == "#" && line[1] == "#")
 				next
 			end
-			for word in line.split(" ")
 
+			stringChar = "\""
+			string = String.new()
+			if(line.include?("\""))
+				string << line[/#{Regexp.escape(stringChar)}(.*?)#{Regexp.escape(stringChar)}/m, 1] # returns the characters between double quotes
+				@words << ('"' + string + '"')
+				line.slice!(('"' + string + '"'))
+			end
+
+			for word in line.split(" ")
 				if(word.include?(','))
-					@words[counter] = ","
-					counter += 1
+					@words << ","
 					word.delete!(',')
 				end
-
-				@words[counter] = word
-				counter += 1
+				@words << word
 			end
 		end
-		
 		return @words
 
 	end # end function
@@ -77,6 +80,9 @@ class Lexical
 				return @Classif[1]	# identifier
 			end	
 
+		elsif @word[0] == '"'
+			return @Classif[6]	# string
+
 		elsif(@word[0] =~ /[0-9]/)
 			dot = 0
 			if(@word[-1] == ".")
@@ -91,13 +97,14 @@ class Lexical
 				end
 			end
 			if(dot == 1)
-				return @Classif[5]	# constant
+				return @Classif[5]	# double
 			else
-				return @Classif[4]	# constant
+				return @Classif[4]	# long
 			end
 			
 		elsif(@word[0] == ',')
 			return @Classif[3]	# symbol
+
 		else
 			errorMessage(@word)
 		end
