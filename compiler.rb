@@ -24,24 +24,27 @@ class Lexical
 		@words = Array.new()
 		file = File.open(@fileName, "r") # "r" stands for read
 
-		counter = 0
 		file.each_line do |line|
 			if(line[0] == "#" && line[1] == "#")
 				next
 			end
-			for word in line.split(" ")
 
+			stringChar = "\""
+			string = String.new()
+			if(line.include?("\""))
+				string << line[/#{Regexp.escape(stringChar)}(.*?)#{Regexp.escape(stringChar)}/m, 1] # returns the characters between double quotes
+				@words << ('"' + string + '"')
+				line.slice!(('"' + string + '"'))
+			end
+
+			for word in line.split(" ")
 				if(word.include?(','))
-					@words[counter] = ","
-					counter += 1
+					@words << ","
 					word.delete!(',')
 				end
-
-				@words[counter] = word
-				counter += 1
+				@words << word
 			end
 		end
-
 		return @words
 
 	end # end function
@@ -50,6 +53,7 @@ class Lexical
 	def classifyWord(word)
 		'''
 			Return the classification of the word.
+
 			Note: Identifiers can only contain lower letters.
 
 			Example on C:
@@ -58,8 +62,11 @@ class Lexical
 		@word = word
 		@Classif = ['keyword', 				# 0
 								'identifier', 		# 1
-								'constant', 			# 2
-								'symbol'].freeze	# 3
+								'constant', 			# 2 not used
+								'symbol',					# 3
+								'long',						# 4
+								'double',					# 5
+								'string'].freeze	# 6
 
 		if(@word[0] =~ /[a-z]/)
 			if(@@ReservWords.include?(@word))
@@ -72,6 +79,9 @@ class Lexical
 					end
 				return @Classif[1]	# identifier
 			end	
+
+		elsif @word[0] == '"'
+			return @Classif[6]	# string
 
 		elsif(@word[0] =~ /[0-9]/)
 			dot = 0
@@ -86,10 +96,15 @@ class Lexical
 					errorMessage(@word)
 				end
 			end
-			return @Classif[2]	# constant
+			if(dot == 1)
+				return @Classif[5]	# double
+			else
+				return @Classif[4]	# long
+			end
 			
 		elsif(@word[0] == ',')
 			return @Classif[3]	# symbol
+
 		else
 			errorMessage(@word)
 		end
@@ -149,7 +164,7 @@ class Lexical
 			Prints an error message.
 		'''
 		@word = word
-		Kernel.abort("Error syntaxis on: '" + @word + "', line: " + getLine(@word).to_s + "\n")
+		Kernel.abort("Lexical error on: '" + @word + "', at line: " + getLine(@word).to_s + "\n")
 
 	end # end function
 
