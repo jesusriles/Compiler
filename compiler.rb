@@ -25,13 +25,13 @@ class Lexical
 		file = File.open(@fileName, "r") # "r" stands for read
 
 		file.each_line do |line|
-			if(line[0] == "#" && line[1] == "#")
+			if line[0] == "#" && line[1] == "#"
 				next
 			end
 
 			stringChar = "\""
 			string = String.new()
-			if(line.include?("\""))
+			if line.include?("\"")
 				begin
 					string << line[/#{Regexp.escape(stringChar)}(.*?)#{Regexp.escape(stringChar)}/m, 1] # returns the characters between double quotes
 					@words << ('"' + string + '"')
@@ -42,7 +42,7 @@ class Lexical
 			end
 
 			for word in line.split(" ")
-				if(word.include?(','))
+				if word.include?(',')
 					@words << ","
 					word.delete!(',')
 				end
@@ -72,12 +72,12 @@ class Lexical
 								'double',					# 5
 								'string'].freeze	# 6
 
-		if(@word[0] =~ /[a-z]/)
-			if(@@ReservWords.include?(@word))
+		if @word[0] =~ /[a-z]/
+			if @@ReservWords.include?(@word)
 				return @Classif[0]	# keyword
 			else
 					@word.split("").each do |letter|
-						if(!(letter =~ /[a-z]/))
+						if !(letter =~ /[a-z]/)
 							errorMessage(@word)
 						end
 					end
@@ -87,26 +87,26 @@ class Lexical
 		elsif @word[0] == '"'
 			return @Classif[6]	# string
 
-		elsif(@word[0] =~ /[0-9]/)
+		elsif @word[0] =~ /[0-9]/
 			dot = 0
-			if(@word[-1] == ".")
+			if @word[-1] == "."
 				errorMessage(@word)
 			end
 			@word.split("").each do |letter|
-				if(letter == '.')
+				if letter == '.'
 					dot += 1
 				end
-				if(!(letter =~ /[0-9]/ || letter == ".") || (dot == 2))
+				if !(letter =~ /[0-9]/ || letter == ".") || (dot == 2)
 					errorMessage(@word)
 				end
 			end
-			if(dot == 1)
+			if dot == 1
 				return @Classif[5]	# double
 			else
 				return @Classif[4]	# long
 			end
 			
-		elsif(@word[0] == ',')
+		elsif @word[0] == ','
 			return @Classif[3]	# symbol
 
 		else
@@ -125,7 +125,7 @@ class Lexical
 		result = Hash.new()
 
 		for word in fileContent
-			if(!result.has_value?(word))
+			if !result.has_value?(word)
 				result[word] = classifyWord(word).to_s()
 			end
 		end
@@ -145,7 +145,7 @@ class Lexical
 
 		counter = 1
 		file.each_line do |line|
-			if(line.include?(@word))
+			if line.include?(@word)
 				return counter
 			end
 			counter += 1
@@ -170,11 +170,11 @@ class Lexical
 		@word = word
 		@option = option
 
-		if (option == 1)
+		if option == 1
 			Kernel.abort("Lexical error on: '" + @word + "', at line: " + getLine(@word).to_s + "\n")
 		end
 
-		if (option == 2)
+		if option == 2
 			puts("")
 			Kernel.abort('Please close double quotes ("") on line: ' + getLine(@word).to_s)
 		end
