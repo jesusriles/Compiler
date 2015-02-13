@@ -87,8 +87,9 @@ class Lexical
 		elsif @word[0] == '"'
 			return @Classif[6]	# string
 
-		elsif @word[0] =~ /[0-9]/
+		elsif @word[0] =~ /[0-9]/ || @word[0] == "." || @word[0] == "+" || @word[0] == "-"
 			dot = 0
+			signs = 0
 			if @word[-1] == "."
 				errorMessage(@word)
 			end
@@ -96,7 +97,10 @@ class Lexical
 				if letter == '.'
 					dot += 1
 				end
-				if !(letter =~ /[0-9]/ || letter == ".") || (dot == 2)
+				if letter == "+" || letter == "-"
+					signs += 1
+				end
+				if !(letter =~ /[0-9]/ || letter == "." || letter == "+" || letter == "-") || dot == 2 || signs == 2
 					errorMessage(@word)
 				end
 			end
