@@ -1,13 +1,16 @@
 ## aqui se declaran las variables
-	definir a				como 90.0
-	definir estudiante 		como 10.9
-	definir c 				como 0
-	definir d 				como 494.0
-	definir numero 			como 69.69
-	definir e 				como 5
-	definir resultado 		como 0
-	definir nombre 			como "nayeli escamilla"
-	definir nombredos		como "jesus hector"
+	definir a				como +90.0
+	definir estudiante 		como -10.9
+	definir c 				como 76.1
+	definir d 				como -0.94
+	definir numero	 		como +69.69
+	definir e 				como -.5
+	definir resultado 		como .00
+	definir x				como 99.99
+	definir nombre 			como "brozo&"
+	definir nombredos		como "jesus, hector"
+	definir amiga			como "#Naye EscamilL@#"
+	definir stringuno		como "°° My name is Jesus Hector & I like computer security! °°"
 
 ## aqui se hacen las primeras operaciones
 	suma a mas b, dejalo c
