@@ -2,7 +2,7 @@
 # 	Nombre: 		Jesus Hector Gonzalez Vidaurri		#
 # 	Materia: 		Lenguajes de Programacion					#
 # 																								#
- 
+
 require 'fileutils'
 
 class Lexical
@@ -42,7 +42,7 @@ class Lexical
 			end
 
 			for word in line.split(" ")
-				if word.include?(',')
+				if word[-1] == ','
 					@words << ","
 					word.delete!(',')
 				end
@@ -110,7 +110,8 @@ class Lexical
 				return @Classif[4]	# long
 			end
 			
-		elsif @word[0] == ','
+		elsif @word == ','
+
 			return @Classif[3]	# symbol
 
 		else
