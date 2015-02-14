@@ -90,7 +90,7 @@ class Lexical
 		elsif @word[0] =~ /[0-9]/ || @word[0] == "." || @word[0] == "+" || @word[0] == "-"
 			dot = 0
 			signs = 0
-			if @word[-1] == "."
+			if @word[-1] == "." || @word == "-" || @word == "+"
 				errorMessage(@word)
 			end
 			@word.split("").each do |letter|
@@ -111,7 +111,6 @@ class Lexical
 			end
 			
 		elsif @word == ','
-
 			return @Classif[3]	# symbol
 
 		else
