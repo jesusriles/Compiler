@@ -247,8 +247,6 @@ class Syntaxis
 
 		@words.delete(",")
 
-#		puts @words
-
 		for word in @words
 			if @wordsClassif[word] == 'keyword' && @mustBeKeyword
 #				puts ("word: #{word}; classif: #{@wordsClassif[word]}")
@@ -262,30 +260,19 @@ class Syntaxis
 			end
 		end
 
-		# # testing, print statement
-		# value = 0
-		# lines = 18
-		# words = 0
-
-		# while (value != nil)
-		# 	puts(@linesAndWords[lines.to_s + words.to_s])
-		# 	value = @linesAndWords[lines.to_s + (words + 1).to_s]
-		# 	words += 1
-		# end
-
 	end # end function
 
 
 	def logicalArithmetic(line)
-
+		
 
 	end # end function
 
 	# access controls
-	#public :rules
-#	private :logicalArithmetic, :rules
+	public :rules
+	private :logicalArithmetic
 
-end
+end # end class
 
 
 '''
