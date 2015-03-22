@@ -90,7 +90,7 @@ module Helper
 
 		if option == 3
 #			Kernel.abort('Syntaxis error on line: ' + @lineNumber + '. The word "' + @word + '" is misplaced.')
-			Kernel.abort('Syntaxis error on line: ' + @lineNumber + '. I was expectiuuung a keyword and \'' + @word + '\' is not an keyword.')
+			Kernel.abort('Syntaxis error on line: ' + @lineNumber + '. I was expecting a keyword and \'' + @word + '\' is an identifier.')
 		end
 
 		if option == 4
@@ -264,7 +264,6 @@ class Syntaxis
 
 		@wordsClassif = wordsClassif
 		@mustBeKeyword = true
-
 		@words = readFile()
 		@wordsWithComma = @words.dup
 		@words.delete(",")
@@ -272,17 +271,25 @@ class Syntaxis
 
 		# enforce correct order
 		for word in @words
-			if @wordsClassif[word] == 'keyword' && @mustBeKeyword
+			if @mustBeKeyword
 				@mustBeKeyword = false
-			elsif (@wordsClassif[word] == 'identifier' || @wordsClassif[word] == 'double' || @wordsClassif[word] == 'long' ||
-							@wordsClassif[word] == 'string') && !@mustBeKeyword
+
+				if @wordsClassif[word] == 'keyword'
+					next
+				else
+					errorMessage(word, 3) 
+				end
+			end
+
+			if !@mustBeKeyword
 				@mustBeKeyword = true
-			else
-			# 	if (@keyword)
-			# 		errorMessage(word, 3)
-			# 	else
-			# 		errorMessage(word, 6)
-			# 	end
+
+				if @wordsClassif[word] == 'identifier' || @wordsClassif[word] == 'double' || @wordsClassif[word] == 'long' ||
+							@wordsClassif[word] == 'string'
+					next
+				else
+					errorMessage(word, 6)
+				end
 			end
 		end
 
