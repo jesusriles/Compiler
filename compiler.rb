@@ -42,11 +42,16 @@ module Helper
 			end
 
 			for word in line.split(" ")
-				if word[-1] == ','
-					@words << ","
+				if word.include?(',')
+					if (word.count ",") > 1
+						errorMessage(',,', 4)
+					end
 					word.delete!(',')
+					@words << word
+					@words << ","
+				else
+					@words << word
 				end
-				@words << word
 			end
 
 			if @hasString
@@ -56,7 +61,6 @@ module Helper
 		end
 
 		file.close()
-
 		return @words
 
 	end # end function
@@ -70,17 +74,35 @@ module Helper
 
 		@word = word
 		@option = option
+		@lineNumber = getLine(@word).to_s
+
+#		if @lineNumber = -1
+#			Kernel.abort("LINE NUMBER NOT FOUND!")
+#		end
 
 		if option == 1
-			Kernel.abort("Lexical error on: '" + @word + "', at line: " + getLine(@word).to_s + "\n")
+			Kernel.abort("Lexical error on: '" + @word + "', at line: " + @lineNumber + "\n")
 		end
 
 		if option == 2
-			Kernel.abort('Please close double quotes ("") on line: ' + getLine(@word).to_s)
+			Kernel.abort('Please close double quotes ("") on line: ' + @lineNumber)
 		end
 
 		if option == 3
-			Kernel.abort('Syntaxis error on line: ' + getLine(@word).to_s + '. The word "' + word + '" is misplaced.')
+#			Kernel.abort('Syntaxis error on line: ' + @lineNumber + '. The word "' + @word + '" is misplaced.')
+			Kernel.abort('Syntaxis error on line: ' + @lineNumber + '. I was expecting a keyword and \'' + @word + '\' is an identifier.')
+		end
+
+		if option == 4
+			Kernel.abort('Syntaxis error on line: ' + @lineNumber + '. You placed 2 commas!.')
+		end
+
+		if option == 5
+			Kernel.abort('Syntaxis error on line: ' + @lineNumber + '. Comma shouldn\'t be there!')
+		end
+
+		if option == 6
+			Kernel.abort('Syntaxis error on line: ' + @lineNumber + '. I was expecting an identifier and \'' + @word + '\' is a keyword.')
 		end
 
 	end # end function
@@ -103,7 +125,7 @@ module Helper
 			end
 			counter += 1
 		end
-
+		return -1
 	end # end function
 
 
@@ -241,51 +263,64 @@ class Syntaxis
 		'''
 
 		@wordsClassif = wordsClassif
-		@fileName = fileName
-		@words = readFile()
 		@mustBeKeyword = true
-
+		@words = readFile()
+		@wordsWithComma = @words.dup
 		@words.delete(",")
+		@comma = false
 
-#		puts @words
-
+		# enforce correct order
 		for word in @words
-			if @wordsClassif[word] == 'keyword' && @mustBeKeyword
-#				puts ("word: #{word}; classif: #{@wordsClassif[word]}")
+			if @mustBeKeyword
 				@mustBeKeyword = false
-			elsif (@wordsClassif[word] == 'identifier' || @wordsClassif[word] == 'double' || @wordsClassif[word] == 'long' ||
-							@wordsClassif[word] == 'string') && !@mustBeKeyword
-#				puts ("word: #{word}; classif: #{@wordsClassif[word]}")
+
+				if @wordsClassif[word] == 'keyword'
+					next
+				else
+					errorMessage(word, 3) 
+				end
+			end
+
+			if !@mustBeKeyword
 				@mustBeKeyword = true
-			else
-				errorMessage(word, 3)
+
+				if @wordsClassif[word] == 'identifier' || @wordsClassif[word] == 'double' || @wordsClassif[word] == 'long' ||
+							@wordsClassif[word] == 'string'
+					next
+				else
+					errorMessage(word, 6)
+				end
 			end
 		end
 
-		# # testing, print statement
-		# value = 0
-		# lines = 18
-		# words = 0
-
-		# while (value != nil)
-		# 	puts(@linesAndWords[lines.to_s + words.to_s])
-		# 	value = @linesAndWords[lines.to_s + (words + 1).to_s]
-		# 	words += 1
-		# end
+		# check commas
+		for word in @wordsWithComma
+			if @comma
+				@comma = false
+				if word == 'dejalo'
+					next
+				else
+					errorMessage((word.to_s + ","), 5)
+				end
+			end
+			if word == ","
+				@comma = true
+			end
+		end
 
 	end # end function
 
 
 	def logicalArithmetic(line)
-
+		
 
 	end # end function
 
 	# access controls
-	#public :rules
-#	private :logicalArithmetic, :rules
+	public :rules
+	private :logicalArithmetic
 
-end
+end # end class
 
 
 '''
