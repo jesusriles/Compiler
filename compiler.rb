@@ -314,6 +314,7 @@ class Syntaxis
 	def logicalArithmetic(line)
 		
 
+
 	end # end function
 
 	# access controls
@@ -323,15 +324,119 @@ class Syntaxis
 end # end class
 
 
+class Others
+	include Helper
+
+
+	def printAnswer
+
+		
+		
+	end # end function
+
+
+	def calculateValue(fileName = $fileName)
+
+		'''
+
+		'''
+		values = allocateValues()
+
+		@fileName = fileName
+		@lines = Array.new()
+		file = File.open(@fileName, "r") # "r" stands for read
+
+		file.each_line do |line|
+			if line.include?("suma") || line.include?("multiplica") || line.include?("divide") || line.include?("resta")
+
+				line = line.gsub("suma",'')
+				line = line.gsub("multiplica",'')
+				line = line.gsub("divide",'')
+				line = line.gsub("resta",'')
+
+				line = line.gsub("mas",'')
+				line = line.gsub("por",'')
+				line = line.gsub("entre",'')
+				line = line.gsub("menos",'')
+
+				line = line.gsub(",",'')
+
+				puts line
+			end
+		end
+
+		file.close
+
+	end # end function
+
+
+	def allocateValues(fileName = $fileName)
+
+		@fileName = fileName
+		file = File.open(@fileName, "r") # "r" stands for read
+		stringChar = "\""
+		result = Hash.new()
+
+		file.each_line do |line|
+			line.slice!("definir")
+			line.slice!("como")
+
+			if line.include?("##") || line.include?("suma") || line.include?("multiplica") || line.include?("divide") || line.include?("restab")
+				next
+			end
+
+			if line.include?("\"")
+				string = String.new()
+				begin
+					string << line[/#{Regexp.escape(stringChar)}(.*?)#{Regexp.escape(stringChar)}/m, 1] # returns the characters between double quotes
+					line.slice!(('"' + string + '"'))
+					line = line.gsub("\t",'')
+					line = line.gsub("\n",'')
+					line = line.gsub(" ",'')
+					result[line] = string.to_s()
+				rescue
+					errorMessage(line ,2)
+				end
+			else
+				result[line.split(" ")[0]] = line.split(" ")[1].to_s()
+			end
+		end
+
+		return result
+
+		file.close
+
+	end # end function
+
+	def startExecuting
+
+	end # end function
+
+	# access controls
+	public :startExecuting, :calculateValue, :printAnswer
+	private :allocateValues
+
+
+end # end class
+
 '''
 	Start - Testing Area
 '''
 
-lexical = Lexical.new()
-syntaxis = Syntaxis.new()
+#lexical = Lexical.new()
+# syntaxis = Syntaxis.new()
+others = Others.new()
 
-wordsClassif = lexical.startLexicalAnalysis
-syntaxis.rules(wordsClassif)
+# wordsClassif = lexical.startLexicalAnalysis
+# puts wordsClassif
+
+# syntaxisTest = syntaxis.rules(wordsClassif)
+# puts syntaxisTest
+
+otherTest = others.calculateValue
+
+
+# compiled correctly! message
 puts("*********************")
 puts("Compiled correctly!")
 puts("*********************")
