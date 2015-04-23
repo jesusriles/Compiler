@@ -105,6 +105,14 @@ module Helper
 			Kernel.abort('Syntaxis error on line: ' + @lineNumber + '. I was expecting an identifier and \'' + @word + '\' is a keyword.')
 		end
 
+		if option == 7
+			Kernel.abort("Variable \"#{word}\" was not declared!")
+		end
+
+		if option == 8
+			Kernel.abort("Variable \"#{word}\" is a string and can't be used in operations!!")
+		end
+
 	end # end function
 
 
@@ -136,7 +144,7 @@ class Lexical
 	include Helper
 	# class variables
 	@@ReservWords = ['suma',	'resta',	'multiplica',	'divide',	'guardalo',		'definir',	'dejalo',
-										'mas',	'menos',	'por',				'entre',	'en',					'como'].freeze
+										'mas',	'menos',	'por',				'entre',	'en',					'como',			'imprime'].freeze
 	
 
 	def classifyWord(word)
@@ -327,10 +335,25 @@ end # end class
 class Others
 	include Helper
 
+	def initialize
 
-	def printAnswer
+		lexical = Lexical.new()
+		@@wordsClassif = lexical.startLexicalAnalysis
+		@@values = allocateValues()
 
-		
+	end
+
+	def printAnswer(fileName = $fileName)
+
+		@fileName = fileName
+		file = File.open(@fileName, "r") # "r" stands for read
+
+		file.each_line do |line|
+
+			if line.include?("imprime")
+				puts "#{line.split[1].to_s}: #{@@result[line.split[1]]}"
+			end
+		end
 		
 	end # end function
 
@@ -340,13 +363,18 @@ class Others
 		'''
 
 		'''
-		values = allocateValues()
 
 		@fileName = fileName
 		@lines = Array.new()
 		file = File.open(@fileName, "r") # "r" stands for read
 
+		# asegurar que todo este correcto
 		file.each_line do |line|
+
+			if line.include?("##")
+				next
+			end
+
 			if line.include?("suma") || line.include?("multiplica") || line.include?("divide") || line.include?("resta")
 
 				line = line.gsub("suma",'')
@@ -359,11 +387,131 @@ class Others
 				line = line.gsub("entre",'')
 				line = line.gsub("menos",'')
 
+				line = line.gsub("dejalo", '')
 				line = line.gsub(",",'')
 
-				puts line
+				for word in line.split(" ")
+					if @@values.has_key?(word)
+						if @@wordsClassif.has_key?(@@values[word])
+							#puts "#{word} | #{@@values[word]} | #{@@wordsClassif[word]}"
+						else
+							tempVal = ('"' + @@values[word] + '"').to_s
+							if @@wordsClassif.has_key?(tempVal)
+								puts "#{word} | #{@@values[word]} | #{@@wordsClassif[tempVal]}"
+
+								if @@wordsClassif[tempVal] == 'string'
+									errorMessage(word, 8)	## strings can't be used in operations
+								end
+							else
+								puts "********* || This point should not be reached! || *********"
+							end
+						end
+					else
+						tempVal1 = @@wordsClassif[word]
+						if tempVal1 == 'long' || tempVal1 == 'double' || tempVal1 == 'string'
+							next
+						else
+							if line.split(" ")[2] == word
+								puts("---------\"#{word}\" has no value!.---------")
+								next
+							end
+							errorMessage(word, 7)	## var not declared
+						end
+					end
+				end
 			end
 		end
+
+		# aqui se hacen las operaciones
+		file = nil
+		file = File.open(@fileName, "r") # "r" stands for read
+		temp0 = nil
+		temp1 = nil
+		temp2 = nil
+		temp3 = nil # tipo de operacion
+
+		file.each_line do |line|
+
+			if line.include?("##")
+				next
+			end
+
+			if line.include?("suma") || line.include?("multiplica") || line.include?("divide") || line.include?("resta")
+
+				line = line.gsub("mas",'')
+				line = line.gsub("por",'')
+				line = line.gsub("entre",'')
+				line = line.gsub("menos",'')
+
+				line = line.gsub("dejalo", '')
+				line = line.gsub(",",'')
+
+				for word in line.split(" ")
+					#puts word
+
+					# checar el tipo de operacion
+					if word == 'suma'
+						temp3 = 'suma'
+						next
+					end
+					if word == 'resta'
+						temp3 = 'resta'
+						next
+					end
+					if word == 'multiplica'
+						temp3 = 'multiplica'
+						next
+					end
+					if word == 'divide'
+						temp3 = 'divide'
+						next
+					end
+
+					# si es una variable...
+					if @@values.has_key?(word)
+						if word == line.split(" ")[1]
+							temp0 = @@values[word].to_i
+						end
+						if word == line.split(" ")[2]
+							temp1 = @@values[word].to_i
+						end
+						if word == line.split(" ")[3]
+							temp2 = line.split(" ")[3].to_s
+							# suma
+							if temp3 == 'suma'
+								@@result[temp2] = temp0.to_i + temp1.to_i
+#								puts ("#{temp0} + #{temp1} = #{@@result[temp2]} temp2: #{temp2}")
+							end
+							# resta
+							if temp3 == 'resta'
+								@@result[temp2] = (temp0.to_i) - (temp1.to_i)
+#								puts ("#{temp0} - #{temp1} = #{@@result[temp2]} temp2: #{temp2}")
+							end
+							# multiplicacion
+							if temp3 == 'multiplica'
+								@@result[temp2] = temp0.to_i * temp1.to_i
+#								puts ("#{temp0} * #{temp1} = #{@@result[temp2]} temp2: #{temp2}")
+							end
+							# division
+							if temp3 == 'divide'
+								@@result[temp2] = temp0.to_i / temp1.to_i
+#								puts ("#{temp0} / #{temp1} = #{@@result[temp2]} temp2: #{temp2}")
+							end
+						end
+					# si es un valor...
+					else
+						if word == line.split(" ")[1]
+							temp0 = word.to_i
+						end
+						if word == line.split(" ")[2]
+							temp1 = word.to_i
+						end
+					end
+				end
+			end
+		end
+
+		printAnswer()
 
 		file.close
 
@@ -375,13 +523,13 @@ class Others
 		@fileName = fileName
 		file = File.open(@fileName, "r") # "r" stands for read
 		stringChar = "\""
-		result = Hash.new()
+		@@result = Hash.new()
 
 		file.each_line do |line|
 			line.slice!("definir")
 			line.slice!("como")
 
-			if line.include?("##") || line.include?("suma") || line.include?("multiplica") || line.include?("divide") || line.include?("restab")
+			if line.include?("##") || line.include?("suma") || line.include?("multiplica") || line.include?("divide") || line.include?("resta")
 				next
 			end
 
@@ -393,16 +541,16 @@ class Others
 					line = line.gsub("\t",'')
 					line = line.gsub("\n",'')
 					line = line.gsub(" ",'')
-					result[line] = string.to_s()
+					@@result[line] = string.to_s()
 				rescue
 					errorMessage(line ,2)
 				end
 			else
-				result[line.split(" ")[0]] = line.split(" ")[1].to_s()
+				@@result[line.split(" ")[0]] = line.split(" ")[1].to_s()
 			end
 		end
 
-		return result
+		return @@result
 
 		file.close
 
@@ -423,23 +571,24 @@ end # end class
 	Start - Testing Area
 '''
 
-#lexical = Lexical.new()
-# syntaxis = Syntaxis.new()
+lexical = Lexical.new()
+syntaxis = Syntaxis.new()
 others = Others.new()
 
-# wordsClassif = lexical.startLexicalAnalysis
-# puts wordsClassif
+wordsClassif = lexical.startLexicalAnalysis
+#puts wordsClassif
 
-# syntaxisTest = syntaxis.rules(wordsClassif)
-# puts syntaxisTest
+syntaxisTest = syntaxis.rules(wordsClassif)
+#puts syntaxisTest
 
 otherTest = others.calculateValue
-
 
 # compiled correctly! message
 puts("*********************")
 puts("Compiled correctly!")
 puts("*********************")
+
+
 '''
 	Ends - Testing Area
 '''
