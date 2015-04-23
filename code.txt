@@ -1,19 +1,26 @@
 ## aqui se declaran las variables
-	definir a				como +90.0
-	definir estudiante 		como -10.9
-	definir c 				como 76.1
-	definir d 				como -0.94
-	definir numero	 		como +69.69
-	definir e 				como -.5
-	definir resultado 		como .00
+	definir a 				como +1
+	definir b 		 		como -2
+	definir c 				como 3
+	definir d 				como -4
+	definir e 		 		como +5
+	definir f 				como -6
+	definir y 				como 1
 	definir x				como 99.99
+	definir z				como 0
 	definir nombre 			como "brozo&"
 	definir nombredos		como "jesus, hector"
-	definir amiga			como "#Naye EscamilL@#"
+	definir i				como 7
 	definir stringuno		como "°° My name is Jesus Hector & I like computer security! °°"
+	definir u				como 0
 
 ## aqui se hacen las primeras operaciones
 	suma a mas b, dejalo c
-	multiplica 9 por c, dejalo d
-	divide 5 entre numero, dejalo e
-	resta d menos c, dejalo
+	multiplica 9 por d, dejalo u
+	divide 100 entre 5, dejalo e
+	resta y menos x, dejalo i
+
+	imprime a
+	imprime c
+	imprime u
+	imprime stringuno
