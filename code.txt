@@ -22,5 +22,7 @@
 
 	imprime a
 	imprime c
+	imprime arbol
 	imprime u
 	imprime stringuno
+	imprime 9
