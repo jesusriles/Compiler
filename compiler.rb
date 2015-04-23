@@ -351,7 +351,11 @@ class Others
 		file.each_line do |line|
 
 			if line.include?("imprime")
-				puts "#{line.split[1].to_s}: #{@@result[line.split[1]]}"
+				if @@result.has_key?(line.split[1])
+					puts "#{line.split[1].to_s}: #{@@result[line.split[1]]}"
+				else
+					puts "#{line.split[1].to_s}: nil"
+				end
 			end
 		end
 		
